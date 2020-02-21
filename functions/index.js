@@ -6,7 +6,7 @@ const app = express();
 // FireBase Authentication (Not Facebook Authentication)
 const FBAuth = require('./util/fbAuth');
 
-const { getAllScreams, postOneScream, getScream } = require('./handlers/screams');
+const { getAllScreams, postOneScream, getScream, commentOnScream } = require('./handlers/screams');
 const { 
     signup, 
     login, 
@@ -23,7 +23,7 @@ app.get('/scream/:screamId', getScream);
 // TODO: delete scream
 // TODO: like a scream
 // TODO: unlike a scream
-// TODO: comment on scream
+app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
 
 // Users Routes
 app.post('/signup', signup);
