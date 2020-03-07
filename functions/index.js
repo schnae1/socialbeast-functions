@@ -53,7 +53,7 @@ exports.createNotificationOnLike = functions.firestore.document('likes/{id}')
     .onCreate((snapshot) => {
        return db.doc(`/screams/${snapshot.data().screamId}`).get()
             .then(doc => {
-                if(doc.exists){
+                if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
                     return db.doc(`/notifications/${snapshot.id}`).set({
                         createdAt: new Date().toISOString(),
                         recipient: doc.data().userHandle,
@@ -64,22 +64,15 @@ exports.createNotificationOnLike = functions.firestore.document('likes/{id}')
                     });
                 }
             })
-            .then(() => {
-                return
-            })
             .catch(err => {
                 console.error(err);
-                return;
             });
     });
 
 exports.deleteNotificationOnUnlike = functions.firestore.document('likes/{id}')
     .onDelete((snapshot) => {
-        db.doc(`/notifications/${snapshot.id}`)
+        return db.doc(`/notifications/${snapshot.id}`)
             .delete()
-            .then(() => {
-                return;
-            })
             .catch(err => {
                 console.error(err);
                 return;
@@ -91,7 +84,7 @@ exports.createNotificationOnComment = functions.firestore.document('comments/{id
         return db.doc(`/screams/${snapshot.data().screamId}`)
         .get()
         .then(doc => {
-            if(doc.exists){
+            if(doc.exists && doc.data().userHandle !== snapshot.data().userHandle){
                 return db.doc(`/notifications/${snapshot.id}`).set({
                     createdAt: new Date().toISOString(),
                     recipient: doc.data().userHandle,
@@ -101,9 +94,6 @@ exports.createNotificationOnComment = functions.firestore.document('comments/{id
                     screamId: doc.id,
                 });
             }
-        })
-        .then(() => {
-            return
         })
         .catch(err => {
             console.error(err);
